@@ -2,6 +2,20 @@
 
 A library for creating animated robot eyes with various moods, expressions, and animations for displays using LGFX.
 
+<table>
+  <tr>
+    <td><img src="dist/1.jpg" alt="example1" /></td>
+    <td><img src="dist/2.jpg" alt="example2" /></td>
+    <td><img src="dist/3.jpg" alt="example3" /></td>
+  </tr>
+  <tr>
+    <td colspan="3" style="text-align: center;">      
+      <img src="dist/4.jpg" alt="example4" />
+      <img src="dist/5.jpg" alt="example5" />
+    </td>
+  </tr>
+</table>
+
 ## Features
 
 - **Multiple Moods**: Tired, Angry, Happy expressions
