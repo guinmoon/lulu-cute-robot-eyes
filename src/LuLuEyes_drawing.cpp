@@ -480,5 +480,5 @@ void LuLuEyes::drawEyes()
         }
     }
     
-    sprite->pushSprite(0, 0);
+    sprite->pushSprite(SpriteX, SpriteY);
 }

@@ -43,6 +43,8 @@ private:
 public:
     // LGFX_MyDisplay *display;
     inline static LGFX_Sprite* sprite;
+    int SpriteX = 0;
+    int SpriteY = 0;
     // For general setup - screen size and max. frame rate
     int screenWidth = 128;      // OLED display width, in pixels
     int screenHeight = 64;      // OLED display height, in pixels
