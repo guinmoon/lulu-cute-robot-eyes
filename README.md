@@ -1,6 +1,6 @@
 # LuLuEyes - Animated Robot Eyes Library for Arduino
 
-A library for creating animated robot eyes with various moods, expressions, and animations for OLED displays using LGFX.
+A library for creating animated robot eyes with various moods, expressions, and animations for displays using LGFX.
 
 ## Features
 
@@ -24,38 +24,33 @@ A library for creating animated robot eyes with various moods, expressions, and 
 ```cpp
 #include <LovyanGFX.hpp>
 #include <LuLuEyes.h>
+#include <LGFX_AUTODETECT.hpp>  // クラス"LGFX"を用意します
+// #include <lgfx_user/LGFX_ESP32_sample.hpp> // またはユーザ自身が用意したLGFXクラスを準備します
 
-// Initialize display
-LGFX lcd;
+#define EYEBORDER 40
+
+// Initialize display;
+static LGFX gfx; 
+static LGFX_Sprite *eyesSprite;
 
 // Create eyes instance
-LuLuEyes eyes;
+LuLuEyes luluEyes;
+
 
 void setup() {
-  lcd.init();
-  
-  // Initialize eyes with screen dimensions
-  eyes.begin(128, 64, &lcd);
-  
-  // Set eye size
-  eyes.setWidth(80, 80);
-  eyes.setHeight(80, 80);
-  
-  // Enable auto-blinking
-  eyes.setAutoblinker(true, 2, 3);
+    gfx.init();
+    eyesSprite = new LGFX_Sprite(gfx);
+    eyesSprite->setPsram(true);    
+    eyesSprite->createSprite(gfx->width(), gfx->height() - EYEBORDER * 2);        
+    luluEyes->begin(gfx->width(), gfx->height() - EYEBORDER * 2, eyesSprite); 
+    luluEyes->setAutoblinker(ON, 3, 2); // Start auto blinker animation cycle -> bool active, int interval, int variation -> turn on/off, set interval between each blink in full seconds, set range for random interval variation in full seconds
+    luluEyes->setIdleMode(ON, 2, 2);    
+    luluEyes->setSpacebetween(40);
 }
 
 void loop() {
-  // Update eyes animation
-  eyes.update();
-  
-  // Example: Set mood
-  eyes.setMood(HAPPY);
-  
-  // Example: Play animation
-  eyes.anim_hearts();
-  
-  delay(100);
+  luluEyes->update();
+  delay(20);
 }
 ```
 
@@ -124,7 +119,7 @@ void loop() {
 
 ## License
 
-Copyright (C) 2025 Artem Savkin
+Copyright (C) 2026 Artem Savkin
 
 ## Contributing
 
