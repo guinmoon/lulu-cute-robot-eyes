@@ -54,7 +54,8 @@ LuLuEyes luluEyes;
 void setup() {
     gfx.init();
     eyesSprite = new LGFX_Sprite(gfx);
-    eyesSprite->setPsram(true);    
+    luluEyes->SpriteY =  EYEBORDER;
+    eyesSprite->setPsram(true); //if you have PSRAM     
     eyesSprite->createSprite(gfx->width(), gfx->height() - EYEBORDER * 2);        
     luluEyes->begin(gfx->width(), gfx->height() - EYEBORDER * 2, eyesSprite); 
     luluEyes->setAutoblinker(ON, 3, 2); // Start auto blinker animation cycle -> bool active, int interval, int variation -> turn on/off, set interval between each blink in full seconds, set range for random interval variation in full seconds
