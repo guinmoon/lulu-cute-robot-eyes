@@ -57,13 +57,13 @@ void LuLuEyes::drawHeart(int x, int y, int size, uint16_t color)
 
 void LuLuEyes::drawStar(int x, int y, int outerRadius, int innerRadius, float rotationAngle, uint16_t color)
 {
-    // Draw a 5-pointed star with rotation
+    // Draw a proper 5-pointed star
     int numPoints = 5;
     
     // Convert rotation angle to radians
     float rotationRad = rotationAngle * 3.14159 / 180.0;
     
-    // Calculate all points (alternating outer and inner)
+    // Calculate all 10 points (alternating outer and inner)
     int px[10], py[10];
     for (int i = 0; i < numPoints; i++)
     {
@@ -78,15 +78,14 @@ void LuLuEyes::drawStar(int x, int y, int outerRadius, int innerRadius, float ro
         py[2 * i + 1] = y - (int)(innerRadius * sin(innerAngle));
     }
     
-    // Draw star by filling triangles from center to each outer-inner pair
+    // Draw star by filling triangles for each point
+    // Each triangle: center -> outer point i -> inner point i
     for (int i = 0; i < numPoints; i++)
     {
-        int nextOuter = (i + 1) % numPoints;
-        // Draw triangle: center -> outer point -> inner point
         sprite->fillTriangle(
-            x, y,
-            px[2 * i], py[2 * i],
-            px[2 * i + 1], py[2 * i + 1],
+            x, y,                                    // center
+            px[2 * i], py[2 * i],                    // outer point (peak)
+            px[2 * i + 1], py[2 * i + 1],            // inner point (valley)
             color
         );
     }
@@ -438,7 +437,7 @@ void LuLuEyes::drawEyes()
             
             // Twinkle effect: vary size and brightness based on time and star index
             float twinkleFactor = 0.5f + 0.5f * sin(millis() / 100.0f + i * 2.0f);
-            int outerRadius = 38 + (int)(4 * twinkleFactor);
+            int outerRadius = starsSize + (int)(starsSize/3 * twinkleFactor);
             int innerRadius = outerRadius / 2;
             
             // Draw the star with rotation

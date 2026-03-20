@@ -161,7 +161,7 @@ public:
     int sleepBlinkCounter = 0;
     unsigned long sleepBlinkTimer = 0;
     
-    // Animation - spinning stars: yellow sparkling stars that rotate and twinkle
+       // Animation - spinning stars: yellow sparkling stars that rotate and twinkle
     bool spinningStars = 0;
     unsigned long spinningStarsTimer = 0;
     int spinningStarsDuration = 6000; // 3 seconds total animation
@@ -169,6 +169,7 @@ public:
     float starsAngle = 0; // rotation angle in degrees
     int starsCount = 3;   // number of stars
     int starsRadius = 40; // radius of star orbit
+    int starsSize = 38;   // base size of stars
     
     //*********************************************************************************************
     //  GENERAL METHODS
@@ -208,6 +209,8 @@ public:
     // Set vertical flickering (displacing eyes up/down)
     void setVFlicker(bool flickerBit, byte Amplitude);
     void setVFlicker(bool flickerBit);
+    // Set stars size for spinning stars animation
+    void setStarsSize(int size);
     
     //*********************************************************************************************
     //  GETTERS METHODS

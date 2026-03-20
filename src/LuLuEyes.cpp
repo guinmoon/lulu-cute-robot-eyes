@@ -205,6 +205,11 @@ void LuLuEyes::setVFlicker(bool flickerBit)
     vFlicker = flickerBit; // turn flicker on or off
 }
 
+void LuLuEyes::setStarsSize(int size)
+{
+    starsSize = size;
+}
+
 //*********************************************************************************************
 //  GETTERS METHODS
 //*********************************************************************************************
