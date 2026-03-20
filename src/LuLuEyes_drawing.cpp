@@ -55,10 +55,76 @@ void LuLuEyes::drawHeart(int x, int y, int size, uint16_t color)
     );
 }
 
+void LuLuEyes::drawStar(int x, int y, int outerRadius, int innerRadius, float rotationAngle, uint16_t color)
+{
+    // Draw a 5-pointed star with rotation
+    int numPoints = 5;
+    
+    // Convert rotation angle to radians
+    float rotationRad = rotationAngle * 3.14159 / 180.0;
+    
+    // Calculate all points (alternating outer and inner)
+    int px[10], py[10];
+    for (int i = 0; i < numPoints; i++)
+    {
+        // Outer point (peak of star)
+        float outerAngle = rotationRad + i * 2.0 * 3.14159 / numPoints;
+        px[2 * i] = x + (int)(outerRadius * cos(outerAngle));
+        py[2 * i] = y - (int)(outerRadius * sin(outerAngle));
+        
+        // Inner point (valley between peaks)
+        float innerAngle = rotationRad + i * 2.0 * 3.14159 / numPoints + 3.14159 / numPoints;
+        px[2 * i + 1] = x + (int)(innerRadius * cos(innerAngle));
+        py[2 * i + 1] = y - (int)(innerRadius * sin(innerAngle));
+    }
+    
+    // Draw star by filling triangles from center to each outer-inner pair
+    for (int i = 0; i < numPoints; i++)
+    {
+        int nextOuter = (i + 1) % numPoints;
+        // Draw triangle: center -> outer point -> inner point
+        sprite->fillTriangle(
+            x, y,
+            px[2 * i], py[2 * i],
+            px[2 * i + 1], py[2 * i + 1],
+            color
+        );
+    }
+}
+
+void LuLuEyes::drawSparkle(int x, int y, int size, uint16_t color)
+{
+    // Draw a small sparkle effect (cross shape)
+    sprite->fillCircle(x, y, size, color);
+    sprite->fillCircle(x + size, y, size/2, color);
+    sprite->fillCircle(x - size, y, size/2, color);
+    sprite->fillCircle(x, y + size, size/2, color);
+    sprite->fillCircle(x, y - size, size/2, color);
+}
+
 void LuLuEyes::drawEyes()
 {
     // PRE-CALCULATIONS - EYE SIZES AND VALUES FOR ANIMATION TWEENINGS
     calcCleanEyes();
+    
+    // Handle spinning stars animation
+    if (spinningStars)
+    {
+        unsigned long elapsed = millis() - spinningStarsTimer;
+        if (elapsed >= spinningStarsDuration)
+        {
+            spinningStars = 0; // Animation finished
+            // Reset eye positions after stars animation
+            eyeLheightNext = eyeLheightDefault;
+            eyeRheightNext = eyeRheightDefault;
+            eyeLwidthNext = eyeLwidthDefault;
+            eyeRwidthNext = eyeRwidthDefault;
+            eyeLxNext = eyeLxDefault;
+            eyeLyNext = eyeLyDefault;
+            eyeRxNext = eyeRxDefault;
+            eyeRyNext = eyeRyDefault;
+        }
+    }
     
     // Handle hearts animation
     if (hearts)
@@ -180,7 +246,7 @@ void LuLuEyes::drawEyes()
     }
     
     // Vertical size offset for larger eyes when looking left or right (curious gaze)
-    if (curious && !hearts)
+    if (curious && !hearts && !spinningStars)
     {
         if (eyeLxNext <= 10)
         {
@@ -217,14 +283,14 @@ void LuLuEyes::drawEyes()
     eyeRy += (eyeRheightDefault - eyeRheightCurrent) / 2; // vertical centering of eye when closing
     eyeRy -= eyeRheightOffset / 2;
     // Open eyes again after closing them
-    if (eyeL_open && !hearts && !fallingAsleep)
+    if (eyeL_open && !hearts && !fallingAsleep && !spinningStars)
     {
         if (eyeLheightCurrent <= 1 + eyeLheightOffset)
         {
             eyeLheightNext = eyeLheightDefault;
         }
     }
-    if (eyeR_open && !hearts && !fallingAsleep)
+    if (eyeR_open && !hearts && !fallingAsleep && !spinningStars)
     {
         if (eyeRheightCurrent <= 1 + eyeRheightOffset)
         {
@@ -250,7 +316,7 @@ void LuLuEyes::drawEyes()
     // Right eye border radius
     eyeRborderRadiusCurrent = (eyeRborderRadiusCurrent + eyeRborderRadiusNext) / 2;
     // APPLYING MACRO ANIMATIONS
-    if (autoblinker && !hearts && !fallingAsleep)
+    if (autoblinker && !hearts && !fallingAsleep && !spinningStars)
     {
         if (millis() >= blinktimer)
         {
@@ -259,7 +325,7 @@ void LuLuEyes::drawEyes()
         }
     }
     // Laughing - eyes shaking up and down for the duration defined by laughAnimationDuration (default = 500ms)
-    if (laugh && !hearts && !fallingAsleep)
+    if (laugh && !hearts && !fallingAsleep && !spinningStars)
     {
         if (laughToggle)
         {
@@ -275,7 +341,7 @@ void LuLuEyes::drawEyes()
         }
     }
     // Confused - eyes shaking left and right for the duration defined by confusedAnimationDuration (default = 500ms)
-    if (confused && !hearts && !fallingAsleep)
+    if (confused && !hearts && !fallingAsleep && !spinningStars)
     {
         if (confusedToggle)
         {
@@ -291,7 +357,7 @@ void LuLuEyes::drawEyes()
         }
     }
     // Idle - eyes moving to random positions on screen
-    if (idle && !hearts && !fallingAsleep)
+    if (idle && !hearts && !fallingAsleep && !spinningStars)
     {
         if (millis() >= idleAnimationTimer)
         {
@@ -301,7 +367,7 @@ void LuLuEyes::drawEyes()
         }
     }
     // Adding offsets for horizontal flickering/shivering
-    if (hFlicker && !hearts)
+    if (hFlicker && !hearts && !spinningStars)
     {
         if (hFlickerAlternate)
         {
@@ -316,7 +382,7 @@ void LuLuEyes::drawEyes()
         hFlickerAlternate = !hFlickerAlternate;
     }
     // Adding offsets for horizontal flickering/shivering
-    if (vFlicker && !hearts)
+    if (vFlicker && !hearts && !spinningStars)
     {
         if (vFlickerAlternate)
         {
@@ -331,7 +397,7 @@ void LuLuEyes::drawEyes()
         vFlickerAlternate = !vFlickerAlternate;
     }
     // Cyclops mode, set second eye's size and space between to 0
-    if (cyclops && !hearts)
+    if (cyclops && !hearts && !spinningStars)
     {
         eyeRwidthCurrent = 0;
         eyeRheightCurrent = 0;
@@ -343,8 +409,50 @@ void LuLuEyes::drawEyes()
         || cleanupRWidth != eyeRwidthCurrent || cleanupRHeight != eyeRheightCurrent) // if the left eye has changed, clear it and redraw it
         cleanEyes();
         
+    // Clear screen for special animations (stars, hearts)
+    if (spinningStars || hearts)
+    {
+        cleanEyes();
+    }
+    
+    // Handle spinning stars animation drawing
+    if (spinningStars)
+    {
+        unsigned long elapsed = millis() - spinningStarsTimer;
+        float progress = (float)elapsed / spinningStarsDuration;
+        
+        // Calculate rotation angle (full rotation during animation)
+        starsAngle = progress * 360.0f;
+        
+        // Calculate center position (between eyes)
+        int centerX = (eyeLx + eyeRx) / 2;
+        int centerY = (eyeLy + eyeRy) / 2;
+        
+        // Draw multiple rotating stars with twinkling effect
+        for (int i = 0; i < starsCount; i++)
+        {
+            // Calculate star position in circular orbit
+            float starAngle = (starsAngle + i * 360.0f / starsCount) * 3.14159 / 180.0f;
+            int starX = centerX + (int)(starsRadius * cos(starAngle));
+            int starY = centerY + (int)(starsRadius * sin(starAngle));
+            
+            // Twinkle effect: vary size and brightness based on time and star index
+            float twinkleFactor = 0.5f + 0.5f * sin(millis() / 100.0f + i * 2.0f);
+            int outerRadius = 38 + (int)(4 * twinkleFactor);
+            int innerRadius = outerRadius / 2;
+            
+            // Draw the star with rotation
+            drawStar(starX, starY, outerRadius, innerRadius, starsAngle + i * 60.0f, STARCOLOR);
+            
+            // Add sparkle effect at peak twinkle
+            if (twinkleFactor > 0.8f)
+            {
+                drawSparkle(starX, starY, 2, TFT_WHITE);
+            }
+        }
+    }
     // Handle hearts animation drawing
-    if (hearts)
+    else if (hearts)
     {
         unsigned long elapsed = millis() - heartsAnimationTimer;
         float progress = (float)elapsed / heartsAnimationDuration;
@@ -471,7 +579,7 @@ void LuLuEyes::drawEyes()
             sprite->fillTriangle(eyeLx, eyeLy - 1, eyeLx + (eyeLwidthCurrent / 2), eyeLy - 1, eyeLx + (eyeLwidthCurrent / 2), eyeLy + eyelidsAngryHeight - 1, BGCOLOR);                    // left eyelid half
             sprite->fillTriangle(eyeLx + (eyeLwidthCurrent / 2), eyeLy - 1, eyeLx + eyeLwidthCurrent, eyeLy - 1, eyeLx + eyeLwidthCurrent / 2, eyeLy + eyelidsAngryHeight - 1, BGCOLOR); // right eyelid half
         }
-        // Draw happy bottom eyelids
+                     // Draw happy bottom eyelids
         eyelidsHappyBottomOffset = (eyelidsHappyBottomOffset + eyelidsHappyBottomOffsetNext) / 2;
         sprite->fillRoundRect(eyeLx - 1, (eyeLy + eyeLheightCurrent) - eyelidsHappyBottomOffset + 1, eyeLwidthCurrent + 2, eyeLheightDefault, eyeLborderRadiusCurrent, BGCOLOR); // left eye
         if (!cyclops)

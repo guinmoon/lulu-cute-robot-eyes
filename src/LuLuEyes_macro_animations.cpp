@@ -52,3 +52,11 @@ void LuLuEyes::anim_wakeUp()
     eyeL_open = 1;
     eyeR_open = 1;
 }
+
+void LuLuEyes::anim_spinningStars()
+{
+    spinningStars = 1;
+    spinningStarsActive = 0;
+    spinningStarsTimer = millis();
+    starsAngle = 0;
+}

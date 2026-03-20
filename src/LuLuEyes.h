@@ -24,6 +24,9 @@
 #define ON 1
 #define OFF 0
 
+// Star animation color
+#define STARCOLOR TFT_YELLOW // star color
+
 // For switch "predefined positions"
 #define N 1  // north, top center
 #define NE 2 // north-east, top right
@@ -150,13 +153,22 @@ public:
     unsigned long laughAnimationTimer = 0;
     int laughAnimationDuration = 500;
     bool laughToggle = 1;
-    // Animation - falling asleep: gradual eye closing with slow blinks
+       // Animation - falling asleep: gradual eye closing with slow blinks
     bool fallingAsleep = 0;
     unsigned long fallingAsleepTimer = 0;
     int fallingAsleepDuration = 5000; // 5 seconds total animation
     int fallingAsleepStage = 0; // 0 = not started, 1 = animating, 2 = complete
     int sleepBlinkCounter = 0;
     unsigned long sleepBlinkTimer = 0;
+    
+    // Animation - spinning stars: yellow sparkling stars that rotate and twinkle
+    bool spinningStars = 0;
+    unsigned long spinningStarsTimer = 0;
+    int spinningStarsDuration = 6000; // 3 seconds total animation
+    bool spinningStarsActive = 0;
+    float starsAngle = 0; // rotation angle in degrees
+    int starsCount = 3;   // number of stars
+    int starsRadius = 40; // radius of star orbit
     
     //*********************************************************************************************
     //  GENERAL METHODS
@@ -226,7 +238,7 @@ public:
     //*********************************************************************************************
     //  MACRO ANIMATION METHODS
     //*********************************************************************************************
-    // Play confused animation - one shot animation of eyes shaking left and right
+       // Play confused animation - one shot animation of eyes shaking left and right
     void anim_confused();
     // Play laugh animation - one shot animation of eyes shaking up and down
     void anim_laugh();
@@ -236,6 +248,8 @@ public:
     void anim_fallingAsleep();
     // Wake up - open eyes after falling asleep
     void anim_wakeUp();
+    // Play spinning stars animation - yellow sparkling stars that rotate and twinkle
+    void anim_spinningStars();
     
     //*********************************************************************************************
     //  PRE-CALCULATIONS AND ACTUAL DRAWINGS
@@ -251,9 +265,11 @@ public:
     int cleanupRWidth = eyeRwidthCurrent + 2 * cleanupPadding;
     int cleanupRHeight = eyeRheightCurrent + 2 * cleanupPadding;
     
-    void calcCleanEyes();
+      void calcCleanEyes();
     void cleanEyes();
     void drawHeart(int x, int y, int size, uint16_t color);
+    void drawStar(int x, int y, int outerRadius, int innerRadius, float rotationAngle, uint16_t color);
+    void drawSparkle(int x, int y, int size, uint16_t color);
     void drawEyes();
 };
 
